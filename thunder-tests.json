@@ -1,0 +1,141 @@
+{
+  "description": "Tests ThunderClient pour l'API Taxi Cagnes-sur-Mer",
+  "baseUrl": "http://localhost:3000",
+
+  "tests": [
+    {
+      "name": "1️⃣ Créer une réservation (POST)",
+      "method": "POST",
+      "url": "http://localhost:3000/users/reservation",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "nom": "Dupont Jean",
+        "indicatifPays": "+33",
+        "telephone": "612345678",
+        "email": "jean.dupont@example.com",
+        "date": "2025-10-15",
+        "heure": "14:30",
+        "adresseDepart": "Aéroport Nice Côte d'Azur",
+        "adresseArrivee": "Cagnes-sur-Mer, 06800",
+        "nombreBagages": "2",
+        "nombrePassagers": "3",
+        "commentaires": "Vol Air France AF7654 - Siège bébé nécessaire"
+      }
+    },
+    {
+      "name": "2️⃣ Créer une réservation sans email (POST)",
+      "method": "POST",
+      "url": "http://localhost:3000/users/reservation",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "nom": "Martin Sophie",
+        "indicatifPays": "+33",
+        "telephone": "698765432",
+        "date": "2025-10-16",
+        "heure": "09:00",
+        "adresseDepart": "Gare SNCF Cagnes-sur-Mer",
+        "adresseArrivee": "Monaco, Place du Casino",
+        "nombreBagages": "1",
+        "nombrePassagers": "2",
+        "commentaires": "Trajet aller-retour possible ?"
+      }
+    },
+    {
+      "name": "3️⃣ Créer une réservation avec indicatif international (POST)",
+      "method": "POST",
+      "url": "http://localhost:3000/users/reservation",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "nom": "Smith John",
+        "indicatifPays": "+44",
+        "telephone": "7700900123",
+        "email": "john.smith@example.co.uk",
+        "date": "2025-10-20",
+        "heure": "18:45",
+        "adresseDepart": "Hôtel Cagnes-sur-Mer",
+        "adresseArrivee": "Aéroport Nice Côte d'Azur Terminal 2",
+        "nombreBagages": "4",
+        "nombrePassagers": "2",
+        "commentaires": "Véhicule spacieux svp - Beaucoup de bagages"
+      }
+    },
+    {
+      "name": "4️⃣ Récupérer toutes les réservations (GET)",
+      "method": "GET",
+      "url": "http://localhost:3000/users/reservations",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "name": "5️⃣ Récupérer une réservation par ID (GET)",
+      "method": "GET",
+      "url": "http://localhost:3000/users/reservation/ID_A_REMPLACER",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "note": "⚠️ Remplacez 'ID_A_REMPLACER' par un vrai ID obtenu lors de la création"
+    },
+    {
+      "name": "6️⃣ Supprimer une réservation (DELETE)",
+      "method": "DELETE",
+      "url": "http://localhost:3000/users/reservation/ID_A_REMPLACER",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "note": "⚠️ Remplacez 'ID_A_REMPLACER' par un vrai ID obtenu lors de la création"
+    }
+  ],
+
+  "exemples_body": {
+    "reservation_complete": {
+      "nom": "Dubois Marie",
+      "indicatifPays": "+33",
+      "telephone": "623456789",
+      "email": "marie.dubois@gmail.com",
+      "date": "2025-11-01",
+      "heure": "10:15",
+      "adresseDepart": "Cros-de-Cagnes",
+      "adresseArrivee": "Haut-de-Cagnes",
+      "nombreBagages": "1",
+      "nombrePassagers": "1",
+      "commentaires": "Préférence véhicule récent"
+    },
+    "reservation_minimale": {
+      "nom": "Bernard Paul",
+      "telephone": "645123789",
+      "date": "2025-11-05",
+      "heure": "16:00",
+      "adresseDepart": "Juan-les-Pins Centre",
+      "adresseArrivee": "Nice Promenade des Anglais",
+      "nombreBagages": "0",
+      "nombrePassagers": "1"
+    }
+  },
+
+  "champs_requis": [
+    "nom",
+    "telephone",
+    "date",
+    "heure",
+    "adresseDepart",
+    "adresseArrivee",
+    "nombreBagages",
+    "nombrePassagers"
+  ],
+
+  "champs_optionnels": ["email", "commentaires", "indicatifPays (défaut: +33)"],
+
+  "validations": {
+    "indicatifPays": "Format: +XXX (+ suivi de 1 à 4 chiffres)",
+    "telephone": "Format: 8 à 15 chiffres",
+    "date": "Format: YYYY-MM-DD",
+    "heure": "Format: HH:MM"
+  }
+}

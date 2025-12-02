@@ -1,0 +1,163 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Taxi Cagnes-sur-Mer API",
+  "dateExported": "2025-10-12",
+  "version": "1.1",
+  "folders": [],
+  "requests": [
+    {
+      "containerId": "",
+      "sortNum": 10000,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "colId": "taxi-cagnes-sur-mer",
+      "name": "1️⃣ Créer une réservation (POST)",
+      "url": "http://localhost:3000/users/reservation",
+      "method": "POST",
+      "modified": "2025-10-12T20:00:00.000Z",
+      "created": "2025-10-12T20:00:00.000Z",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"nom\": \"Dupont Jean\",\n  \"indicatifPays\": \"+33\",\n  \"telephone\": \"612345678\",\n  \"email\": \"jean.dupont@example.com\",\n  \"date\": \"2025-10-15\",\n  \"heure\": \"14:30\",\n  \"adresseDepart\": \"Aéroport Nice Côte d'Azur\",\n  \"adresseArrivee\": \"Cagnes-sur-Mer, 06800\",\n  \"nombreBagages\": \"2\",\n  \"nombrePassagers\": \"3\",\n  \"commentaires\": \"Vol Air France AF7654 - Siège bébé nécessaire\"\n}",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "containerId": "",
+      "sortNum": 20000,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "colId": "taxi-cagnes-sur-mer",
+      "name": "2️⃣ Créer une réservation minimale (POST)",
+      "url": "http://localhost:3000/users/reservation",
+      "method": "POST",
+      "modified": "2025-10-12T20:00:00.000Z",
+      "created": "2025-10-12T20:00:00.000Z",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"nom\": \"Martin Sophie\",\n  \"telephone\": \"698765432\",\n  \"date\": \"2025-10-16\",\n  \"heure\": \"09:00\",\n  \"adresseDepart\": \"Gare SNCF Cagnes-sur-Mer\",\n  \"adresseArrivee\": \"Monaco, Place du Casino\",\n  \"nombreBagages\": \"1\",\n  \"nombrePassagers\": \"2\"\n}",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "containerId": "",
+      "sortNum": 30000,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "colId": "taxi-cagnes-sur-mer",
+      "name": "3️⃣ Créer réservation UK (POST)",
+      "url": "http://localhost:3000/users/reservation",
+      "method": "POST",
+      "modified": "2025-10-12T20:00:00.000Z",
+      "created": "2025-10-12T20:00:00.000Z",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"nom\": \"Smith John\",\n  \"indicatifPays\": \"+44\",\n  \"telephone\": \"7700900123\",\n  \"email\": \"john.smith@example.co.uk\",\n  \"date\": \"2025-10-20\",\n  \"heure\": \"18:45\",\n  \"adresseDepart\": \"Hôtel Cagnes-sur-Mer\",\n  \"adresseArrivee\": \"Aéroport Nice Côte d'Azur Terminal 2\",\n  \"nombreBagages\": \"4\",\n  \"nombrePassagers\": \"2\",\n  \"commentaires\": \"Véhicule spacieux svp - Beaucoup de bagages\"\n}",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "containerId": "",
+      "sortNum": 40000,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "colId": "taxi-cagnes-sur-mer",
+      "name": "4️⃣ Lister toutes les réservations (GET)",
+      "url": "http://localhost:3000/users/reservations",
+      "method": "GET",
+      "modified": "2025-10-12T20:00:00.000Z",
+      "created": "2025-10-12T20:00:00.000Z",
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "containerId": "",
+      "sortNum": 50000,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "colId": "taxi-cagnes-sur-mer",
+      "name": "5️⃣ Récupérer une réservation par ID (GET)",
+      "url": "http://localhost:3000/users/reservation/ID_A_REMPLACER",
+      "method": "GET",
+      "modified": "2025-10-12T20:00:00.000Z",
+      "created": "2025-10-12T20:00:00.000Z",
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "containerId": "",
+      "sortNum": 60000,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "colId": "taxi-cagnes-sur-mer",
+      "name": "6️⃣ Supprimer une réservation (DELETE)",
+      "url": "http://localhost:3000/users/reservation/ID_A_REMPLACER",
+      "method": "DELETE",
+      "modified": "2025-10-12T20:00:00.000Z",
+      "created": "2025-10-12T20:00:00.000Z",
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "containerId": "",
+      "sortNum": 70000,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "colId": "taxi-cagnes-sur-mer",
+      "name": "7️⃣ Tester la route /date (GET)",
+      "url": "http://localhost:3000/date",
+      "method": "GET",
+      "modified": "2025-10-12T20:00:00.000Z",
+      "created": "2025-10-12T20:00:00.000Z",
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": []
+    }
+  ]
+}
