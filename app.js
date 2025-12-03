@@ -22,8 +22,18 @@ const corsOptions = {
       "https://www.taxi-cagnes-sur-mer.fr",
       "https://taxi-cagnes-sur-mer.fr",
     ];
+
+    // Autoriser tous les sous-domaines Vercel du frontend
+    const vercelPattern =
+      /^https:\/\/taxi-cagnes-sur-mer-frontend(-.*)?\.vercel\.app$/;
+
     // Autoriser les requêtes sans origine (comme Postman ou les apps mobiles)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // ou si l'origine est dans la liste autorisée ou correspond au pattern Vercel
+    if (
+      !origin ||
+      allowedOrigins.indexOf(origin) !== -1 ||
+      vercelPattern.test(origin)
+    ) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));

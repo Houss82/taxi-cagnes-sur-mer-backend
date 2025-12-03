@@ -7,17 +7,28 @@ router.post("/reservation", async (req, res) => {
   try {
     // Vérifier la connexion MongoDB avant de traiter la requête
     const mongoose = require("mongoose");
+    const connectDB = require("../models/connection");
+    
+    // Si pas connecté, essayer de se connecter
     if (mongoose.connection.readyState !== 1) {
-      // Essayer de se reconnecter
-      const connectDB = require("../models/connection");
-      await connectDB();
+      const connected = await connectDB();
       
-      // Vérifier à nouveau après tentative de reconnexion
-      if (mongoose.connection.readyState !== 1) {
-        return res.status(503).json({
-          result: false,
-          error: "Service temporairement indisponible. Connexion à la base de données en cours...",
-        });
+      // Si toujours pas connecté après tentative, attendre un peu plus
+      if (!connected && mongoose.connection.readyState !== 1) {
+        // Attendre jusqu'à 5 secondes supplémentaires
+        let attempts = 0;
+        while (mongoose.connection.readyState !== 1 && attempts < 10) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          attempts++;
+        }
+        
+        // Si toujours pas connecté, retourner erreur
+        if (mongoose.connection.readyState !== 1) {
+          return res.status(503).json({
+            result: false,
+            error: "Service temporairement indisponible. Connexion à la base de données en cours...",
+          });
+        }
       }
     }
 
