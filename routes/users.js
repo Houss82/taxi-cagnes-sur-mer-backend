@@ -2,167 +2,63 @@ var express = require("express");
 var router = express.Router();
 const User = require("../models/users");
 
-// Charger Resend une seule fois au démarrage (si disponible)
-let ResendClass = null;
-try {
-  const resendModule = require("resend");
-  ResendClass = resendModule.Resend;
-} catch (err) {
-  console.warn("⚠️ Package 'resend' non installé. Exécutez: npm install resend");
-}
-
-// Fonction pour envoyer un email de réservation via Resend
-async function sendReservationEmail(reservation) {
-  // Vérifier si Resend est configuré
-  const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  const EMAIL_TO = process.env.EMAIL_TO || "taxicagnessurmer2025@gmail.com";
-  
-  if (!RESEND_API_KEY) {
-    console.warn("⚠️ RESEND_API_KEY non configurée, email non envoyé");
-    return { success: false, error: "RESEND_API_KEY non configurée" };
-  }
-
-  if (!ResendClass) {
-    console.warn("⚠️ Package Resend non disponible, email non envoyé");
-    return { success: false, error: "Package Resend non installé" };
-  }
-
-  try {
-    const resend = new ResendClass(RESEND_API_KEY);
-
-    // Formater la date et l'heure
-    const dateFormatted = new Date(reservation.date).toLocaleDateString("fr-FR", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-    
-    const telephoneComplet = `${reservation.indicatifPays || "+33"} ${reservation.telephone}`;
-
-    // Créer le contenu de l'email
-    const emailHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #f4f4f4; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-          .info { background: #fff; padding: 15px; margin: 10px 0; border-left: 4px solid #007bff; }
-          .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h2>🚕 Nouvelle Réservation - Taxi Cagnes-sur-Mer</h2>
-          </div>
-          
-          <div class="info">
-            <strong>👤 Client:</strong> ${reservation.nom}
-          </div>
-          
-          <div class="info">
-            <strong>📞 Téléphone:</strong> ${telephoneComplet}
-          </div>
-          
-          ${reservation.email ? `<div class="info"><strong>📧 Email:</strong> ${reservation.email}</div>` : ''}
-          
-          <div class="info">
-            <strong>📅 Date:</strong> ${dateFormatted}
-          </div>
-          
-          <div class="info">
-            <strong>🕐 Heure:</strong> ${reservation.heure}
-          </div>
-          
-          <div class="info">
-            <strong>📍 Départ:</strong> ${reservation.adresseDepart}
-          </div>
-          
-          <div class="info">
-            <strong>🎯 Destination:</strong> ${reservation.adresseArrivee}
-          </div>
-          
-          <div class="info">
-            <strong>👥 Passagers:</strong> ${reservation.nombrePassagers}
-          </div>
-          
-          <div class="info">
-            <strong>🧳 Bagages:</strong> ${reservation.nombreBagages}
-          </div>
-          
-          ${reservation.vehicule ? `<div class="info"><strong>🚗 Véhicule:</strong> ${reservation.vehicule}</div>` : ''}
-          
-          ${reservation.commentaires ? `<div class="info"><strong>📝 Notes:</strong> ${reservation.commentaires}</div>` : ''}
-          
-          <div class="footer">
-            <p>Réservation créée le ${new Date().toLocaleString("fr-FR")}</p>
-            <p>ID Réservation: ${reservation._id}</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    const emailText = `
-Nouvelle Réservation - Taxi Cagnes-sur-Mer
-
-Client: ${reservation.nom}
-Téléphone: ${telephoneComplet}
-${reservation.email ? `Email: ${reservation.email}` : ''}
-
-Date: ${dateFormatted}
-Heure: ${reservation.heure}
-
-Départ: ${reservation.adresseDepart}
-Destination: ${reservation.adresseArrivee}
-
-Passagers: ${reservation.nombrePassagers}
-Bagages: ${reservation.nombreBagages}
-${reservation.vehicule ? `Véhicule: ${reservation.vehicule}` : ''}
-${reservation.commentaires ? `Notes: ${reservation.commentaires}` : ''}
-
-ID Réservation: ${reservation._id}
-    `;
-
-    const result = await resend.emails.send({
-      from: "Taxi Cagnes-sur-Mer <onboarding@resend.dev>", // À changer avec votre domaine vérifié
-      to: [EMAIL_TO], // Resend attend un tableau
-      replyTo: reservation.email || undefined,
-      subject: `Nouvelle réservation - ${reservation.nom}`,
-      html: emailHtml,
-      text: emailText,
-    });
-
-    console.log("✅ Email envoyé via Resend avec succès:", result);
-    return { success: true, result };
-  } catch (error) {
-    console.error("❌ Erreur lors de l'envoi d'email Resend:", error);
-    return { success: false, error: error.message };
-  }
-}
-
 // POST - Créer une nouvelle réservation
 router.post("/reservation", async (req, res) => {
   try {
     // Vérifier la connexion MongoDB avant de traiter la requête
     const mongoose = require("mongoose");
-    if (mongoose.connection.readyState !== 1) {
+    const connectionState = mongoose.connection.readyState;
+    
+    console.log(`🔍 État de connexion MongoDB: ${connectionState} (0=disconnected, 1=connected, 2=connecting, 3=disconnecting)`);
+    
+    if (connectionState !== 1) {
+      console.log("🔄 Tentative de connexion à MongoDB...");
       // Essayer de se reconnecter
       const connectDB = require("../models/connection");
-      await connectDB();
+      try {
+        await connectDB();
+      } catch (connectError) {
+        console.error("❌ Erreur lors de la tentative de connexion:", {
+          message: connectError.message,
+          name: connectError.name,
+          code: connectError.code,
+          errorType: connectError.constructor.name,
+        });
+        
+        // Message d'erreur plus détaillé pour aider au diagnostic
+        let errorMessage = "Service temporairement indisponible. Connexion à la base de données en cours...";
+        
+        if (connectError.message.includes("ENOTFOUND") || connectError.message.includes("getaddrinfo")) {
+          errorMessage = "Erreur DNS - Vérifiez votre connexion internet et la configuration MongoDB Atlas";
+        } else if (connectError.message.includes("authentication") || connectError.code === 8000) {
+          errorMessage = "Erreur d'authentification MongoDB - Vérifiez vos identifiants";
+        } else if (connectError.message.includes("timeout") || connectError.code === "ETIMEDOUT") {
+          errorMessage = "Timeout de connexion - Vérifiez la whitelist IP sur MongoDB Atlas (Network Access)";
+        } else if (connectError.code === "ENETUNREACH") {
+          errorMessage = "Réseau inaccessible - Vérifiez la whitelist IP sur MongoDB Atlas";
+        }
+        
+        return res.status(503).json({
+          result: false,
+          error: errorMessage,
+          details: process.env.NODE_ENV === "development" ? connectError.message : undefined,
+        });
+      }
       
       // Vérifier à nouveau après tentative de reconnexion
-      if (mongoose.connection.readyState !== 1) {
+      const newState = mongoose.connection.readyState;
+      console.log(`🔍 Nouvel état de connexion: ${newState}`);
+      
+      if (newState !== 1) {
+        console.error("❌ Impossible de se connecter à MongoDB après tentative");
         return res.status(503).json({
           result: false,
           error: "Service temporairement indisponible. Connexion à la base de données en cours...",
         });
       }
     }
+    
+    console.log("✅ Connexion MongoDB OK, traitement de la réservation...");
 
     // Log pour déboguer
     console.log("Données reçues:", req.body);
@@ -207,19 +103,6 @@ router.post("/reservation", async (req, res) => {
       heure: savedUser.heure,
       timestamp: new Date().toISOString(),
     });
-    
-    // Envoyer l'email de réservation via Resend (en parallèle, ne bloque pas)
-    sendReservationEmail(savedUser.toObject({ virtuals: true }))
-      .then((emailResult) => {
-        if (emailResult.success) {
-          console.log("✅ Email de réservation envoyé avec succès via Resend");
-        } else {
-          console.error("❌ Échec envoi email Resend:", emailResult.error);
-        }
-      })
-      .catch((err) => {
-        console.error("❌ Erreur lors de l'envoi d'email:", err);
-      });
     
     // Convertir en objet JSON pour s'assurer que tous les champs sont inclus
     const reservationObj = savedUser.toObject({ virtuals: true });
