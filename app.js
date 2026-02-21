@@ -51,5 +51,10 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
 // Connexion à la base de données avec gestion d'erreur
-connectDB();
+// Sur Vercel, la connexion sera réessayée à chaque requête si nécessaire
+connectDB().catch((err) => {
+  console.error("❌ Erreur lors de la connexion initiale à MongoDB:", err.message);
+  console.log("ℹ️ La connexion sera réessayée à la prochaine requête");
+});
+
 module.exports = app;
