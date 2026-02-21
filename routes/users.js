@@ -2,6 +2,15 @@ var express = require("express");
 var router = express.Router();
 const User = require("../models/users");
 
+// Charger Resend une seule fois au démarrage (si disponible)
+let ResendClass = null;
+try {
+  const resendModule = require("resend");
+  ResendClass = resendModule.Resend;
+} catch (err) {
+  console.warn("⚠️ Package 'resend' non installé. Exécutez: npm install resend");
+}
+
 // Fonction pour envoyer un email de réservation via Resend
 async function sendReservationEmail(reservation) {
   // Vérifier si Resend est configuré
@@ -13,9 +22,13 @@ async function sendReservationEmail(reservation) {
     return { success: false, error: "RESEND_API_KEY non configurée" };
   }
 
+  if (!ResendClass) {
+    console.warn("⚠️ Package Resend non disponible, email non envoyé");
+    return { success: false, error: "Package Resend non installé" };
+  }
+
   try {
-    const { Resend } = require("resend");
-    const resend = new Resend(RESEND_API_KEY);
+    const resend = new ResendClass(RESEND_API_KEY);
 
     // Formater la date et l'heure
     const dateFormatted = new Date(reservation.date).toLocaleDateString("fr-FR", {
@@ -117,7 +130,7 @@ ID Réservation: ${reservation._id}
 
     const result = await resend.emails.send({
       from: "Taxi Cagnes-sur-Mer <onboarding@resend.dev>", // À changer avec votre domaine vérifié
-      to: EMAIL_TO,
+      to: [EMAIL_TO], // Resend attend un tableau
       replyTo: reservation.email || undefined,
       subject: `Nouvelle réservation - ${reservation.nom}`,
       html: emailHtml,
